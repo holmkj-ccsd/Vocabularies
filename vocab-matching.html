@@ -415,36 +415,42 @@
         screenButton.innerText = "⏳ Generating Image...";
         screenButton.disabled = true;
 
-        html2canvas(targetElement, {
-            backgroundColor: '#0f172a', // Enforce original background canvas color match
-            scale: 2 // Boost resolution quality for high DPI student monitors
-        }).then(canvas => {
-            canvas.toBlob(blob => {
-                if (!blob) {
-                    screenButton.innerText = "❌ Generation Failed";
-                    return;
-                }
-                
-                // Write image blob directly to user's system clipboard matrix
-                navigator.clipboard.write([
-                    new ClipboardItem({ [blob.type]: blob })
-                ]).then(() => {
-                    screenButton.style.backgroundColor = '#10b981';
-                    screenButton.style.color = '#ffffff';
-                    screenButton.innerText = "✅ Screenshot Copied to Clipboard!";
-                    setTimeout(() => {
-                        screenButton.style.backgroundColor = 'var(--accent-blue)';
-                        screenButton.style.color = '#0f172a';
-                        screenButton.innerText = "📋 Copy Screenshot to Clipboard";
+        // Introduce a slight delay to ensure the browser has fully painted the green completion box
+        setTimeout(() => {
+            html2canvas(targetElement, {
+                backgroundColor: '#0f172a', // Enforce original background canvas color match
+                scale: 2, // Boost resolution quality for high DPI student monitors
+                logging: false,
+                useCORS: true // Ensures external CDNs like the font style sheets render perfectly
+            }).then(canvas => {
+                canvas.toBlob(blob => {
+                    if (!blob) {
+                        screenButton.innerText = "❌ Generation Failed";
                         screenButton.disabled = false;
-                    }, 3000);
-                }).catch(err => {
-                    console.error("Clipboard Error: ", err);
-                    screenButton.innerText = "❌ Browser Blocked Copying";
-                    screenButton.disabled = false;
-                });
-            }, 'image/png');
-        });
+                        return;
+                    }
+                    
+                    // Write image blob directly to user's system clipboard matrix
+                    navigator.clipboard.write([
+                        new ClipboardItem({ [blob.type]: blob })
+                    ]).then(() => {
+                        screenButton.style.backgroundColor = '#10b981';
+                        screenButton.style.color = '#ffffff';
+                        screenButton.innerText = "✅ Screenshot Copied to Clipboard!";
+                        setTimeout(() => {
+                            screenButton.style.backgroundColor = 'var(--accent-blue)';
+                            screenButton.style.color = '#0f172a';
+                            screenButton.innerText = "📋 Copy Screenshot to Clipboard";
+                            screenButton.disabled = false;
+                        }, 3000);
+                    }).catch(err => {
+                        console.error("Clipboard Error: ", err);
+                        screenButton.innerText = "❌ Browser Blocked Copying";
+                        screenButton.disabled = false;
+                    });
+                }, 'image/png');
+            });
+        }, 200); // 200ms delay is the sweet spot for the animation to complete
     }
 </script>
 
