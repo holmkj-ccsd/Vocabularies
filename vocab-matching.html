@@ -126,7 +126,7 @@
             padding: 4px 8px;
         }
 
-        /* Control Panel */
+        /* Control Panel Layout updates */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -134,18 +134,25 @@
             border-top: 1px solid var(--border-color);
             padding-top: 20px;
             margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
         }
 
         .btn {
             background-color: var(--accent-green);
             color: #ffffff;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 20px;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, opacity 0.2s;
+            white-space: nowrap;
         }
 
         .btn:hover {
@@ -156,17 +163,18 @@
             background-color: var(--border-color);
             color: var(--text-muted);
             cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .btn-screenshot {
             background-color: var(--accent-blue);
             color: #0f172a;
-            margin-top: 15px;
         }
 
         .status-feedback {
             font-weight: 600;
             font-size: 0.95rem;
+            flex-grow: 1;
         }
 
         /* Success Class */
@@ -258,14 +266,16 @@
 
     <div class="controls">
         <div class="status-feedback" id="feedback-msg">Attempts remaining: 5 / 5</div>
-        <button class="btn" id="check-btn" onclick="checkAnswers()">Check Answers</button>
+        <div class="btn-group">
+            <button class="btn" id="check-btn" onclick="checkAnswers()">Check Answers</button>
+            <button class="btn btn-screenshot" id="screenshot-btn" onclick="copyScreenshot()" disabled>📋 Screenshot</button>
+        </div>
     </div>
 
     <div class="code-container" id="code-box">
         <div class="code-title">🎉 Activity Completed Successfully!</div>
         <div class="code-display" id="completion-code-render">DGD-TRACK-XXXXXX</div>
-        <div class="code-instructions">Your answers have been verified. Click the button below to copy a receipt screenshot to your clipboard.</div>
-        <button class="btn btn-screenshot" id="screenshot-btn" onclick="copyScreenshot()">📋 Copy Screenshot to Clipboard</button>
+        <div class="code-instructions">Your answers have been verified. Click the activated Screenshot button above to save your completion voucher to your clipboard!</div>
     </div>
 </div>
 
@@ -387,6 +397,9 @@
         const finalCode = `DGD-PROD-${randomResult}`;
         document.getElementById('completion-code-render').innerText = finalCode;
         document.getElementById('code-box').style.display = 'block';
+        
+        // Turn on screenshot option now that elements are generated
+        document.getElementById('screenshot-btn').disabled = false;
     }
 
     function revealCorrectAnswers() {
@@ -407,50 +420,48 @@
         cards.forEach(card => card.setAttribute('draggable', 'false'));
     }
 
-    // Capture the entire element container as an image blob and copy to clipboard
     function copyScreenshot() {
         const targetElement = document.getElementById('capture-target');
         const screenButton = document.getElementById('screenshot-btn');
         
-        screenButton.innerText = "⏳ Generating Image...";
+        screenButton.innerText = "⏳ Processing...";
         screenButton.disabled = true;
 
-        // Introduce a slight delay to ensure the browser has fully painted the green completion box
+        // 200ms safety buffer allows rendering elements to finalize fully inside the DOM paint cycle
         setTimeout(() => {
             html2canvas(targetElement, {
-                backgroundColor: '#0f172a', // Enforce original background canvas color match
-                scale: 2, // Boost resolution quality for high DPI student monitors
+                backgroundColor: '#0f172a', 
+                scale: 2, 
                 logging: false,
-                useCORS: true // Ensures external CDNs like the font style sheets render perfectly
+                useCORS: true 
             }).then(canvas => {
                 canvas.toBlob(blob => {
                     if (!blob) {
-                        screenButton.innerText = "❌ Generation Failed";
+                        screenButton.innerText = "❌ Failed";
                         screenButton.disabled = false;
                         return;
                     }
                     
-                    // Write image blob directly to user's system clipboard matrix
                     navigator.clipboard.write([
                         new ClipboardItem({ [blob.type]: blob })
                     ]).then(() => {
                         screenButton.style.backgroundColor = '#10b981';
                         screenButton.style.color = '#ffffff';
-                        screenButton.innerText = "✅ Screenshot Copied to Clipboard!";
+                        screenButton.innerText = "✅ Copied!";
                         setTimeout(() => {
                             screenButton.style.backgroundColor = 'var(--accent-blue)';
                             screenButton.style.color = '#0f172a';
-                            screenButton.innerText = "📋 Copy Screenshot to Clipboard";
+                            screenButton.innerText = "📋 Screenshot";
                             screenButton.disabled = false;
                         }, 3000);
                     }).catch(err => {
                         console.error("Clipboard Error: ", err);
-                        screenButton.innerText = "❌ Browser Blocked Copying";
+                        screenButton.innerText = "❌ Blocked";
                         screenButton.disabled = false;
                     });
                 }, 'image/png');
             });
-        }, 800); // 200ms delay is the sweet spot for the animation to complete
+        }, 800); 
     }
 </script>
 
