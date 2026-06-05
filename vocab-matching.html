@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vocabulary Matching Activity</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -157,6 +158,12 @@
             cursor: not-allowed;
         }
 
+        .btn-screenshot {
+            background-color: var(--accent-blue);
+            color: #0f172a;
+            margin-top: 15px;
+        }
+
         .status-feedback {
             font-weight: 600;
             font-size: 0.95rem;
@@ -170,7 +177,7 @@
 
         /* Completion Code Box */
         .code-container {
-            display: none; /* Hidden by default */
+            display: none; 
             background-color: var(--completion-bg);
             border: 2px solid var(--accent-green);
             padding: 20px;
@@ -214,7 +221,7 @@
 </head>
 <body>
 
-<div class="activity-container">
+<div class="activity-container" id="capture-target">
     <h2>Vocabulary Matching: Production & Concepts</h2>
     <p class="instructions">Drag each key term from the word bank into its correct matching sentence placeholder below. Incorrect answers automatically return to the top bank when verified.</p>
 
@@ -257,7 +264,8 @@
     <div class="code-container" id="code-box">
         <div class="code-title">🎉 Activity Completed Successfully!</div>
         <div class="code-display" id="completion-code-render">DGD-TRACK-XXXXXX</div>
-        <div class="code-instructions">Copy this unique code and paste it into the corresponding Canvas text assignment to submit your score.</div>
+        <div class="code-instructions">Your answers have been verified. Click the button below to copy a receipt screenshot to your clipboard.</div>
+        <button class="btn btn-screenshot" id="screenshot-btn" onclick="copyScreenshot()">📋 Copy Screenshot to Clipboard</button>
     </div>
 </div>
 
@@ -304,7 +312,6 @@
         }
     }
 
-    // Allows returning cards to the word bank pool
     function dropBackToBank(ev) {
         ev.preventDefault();
         let bank = document.getElementById('word-bank');
@@ -344,7 +351,7 @@
                 zone.classList.add('correct-match');
                 currentCard.setAttribute('draggable', 'false'); 
             } else {
-                bank.appendChild(currentCard); // Pop wrong answers back to top
+                bank.appendChild(currentCard); 
                 allCorrect = false;
             }
         });
@@ -370,9 +377,8 @@
         }
     }
 
-    // Generates a random alphanumeric string to prevent simple code copying
     function displayVerification() {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Excluded confusing characters like O, 0, I, 1
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
         let randomResult = '';
         for (let i = 0; i < 6; i++) {
             randomResult += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -399,6 +405,46 @@
         document.getElementById('check-btn').disabled = true;
         const cards = document.querySelectorAll('.word-card');
         cards.forEach(card => card.setAttribute('draggable', 'false'));
+    }
+
+    // Capture the entire element container as an image blob and copy to clipboard
+    function copyScreenshot() {
+        const targetElement = document.getElementById('capture-target');
+        const screenButton = document.getElementById('screenshot-btn');
+        
+        screenButton.innerText = "⏳ Generating Image...";
+        screenButton.disabled = true;
+
+        html2canvas(targetElement, {
+            backgroundColor: '#0f172a', // Enforce original background canvas color match
+            scale: 2 // Boost resolution quality for high DPI student monitors
+        }).then(canvas => {
+            canvas.toBlob(blob => {
+                if (!blob) {
+                    screenButton.innerText = "❌ Generation Failed";
+                    return;
+                }
+                
+                // Write image blob directly to user's system clipboard matrix
+                navigator.clipboard.write([
+                    new ClipboardItem({ [blob.type]: blob })
+                ]).then(() => {
+                    screenButton.style.backgroundColor = '#10b981';
+                    screenButton.style.color = '#ffffff';
+                    screenButton.innerText = "✅ Screenshot Copied to Clipboard!";
+                    setTimeout(() => {
+                        screenButton.style.backgroundColor = 'var(--accent-blue)';
+                        screenButton.style.color = '#0f172a';
+                        screenButton.innerText = "📋 Copy Screenshot to Clipboard";
+                        screenButton.disabled = false;
+                    }, 3000);
+                }).catch(err => {
+                    console.error("Clipboard Error: ", err);
+                    screenButton.innerText = "❌ Browser Blocked Copying";
+                    screenButton.disabled = false;
+                });
+            }, 'image/png');
+        });
     }
 </script>
 
