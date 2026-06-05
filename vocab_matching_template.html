@@ -255,34 +255,42 @@
     // Edit the text below to adapt this puzzle for any vocabulary lesson!
     // =========================================================================
     const VOCAB_DATA = {
-        title: "Vocabulary Matching: Production & Concepts",
+        title: "Vocabulary Matching: Welcome to DGD",
         instructions: "Drag each key term from the word bank into its correct matching sentence placeholder below. Incorrect answers automatically return to the top bank when verified.",
-        assignmentPrefix: "DGD-PROD", // Prefix used in the unique verification string
+        assignmentPrefix: "DGD-WELC", // Prefix used in the unique verification string
         maxAttempts: 5,
         
         // Add as many words and sentences as you want. 
         // IMPORTANT: The key (left side) must exactly match the placeholder value inside the sentence text!
         items: [
             { 
-                word: "Premise", 
-                sentence: "The foundational story framework defining the Who, What, Where, When, and Why of a game is called its [BLANK]." 
+                word: "vocabword1", 
+                sentence: " [BLANK] ." 
             },
             { 
-                word: "Vertical Slice", 
-                sentence: "To secure funding from a publisher, the team built a [BLANK] to showcase 80% working mechanics in a single polished layout." 
+                word: "vocabword2", 
+                sentence: " [BLANK] ." 
             },
             { 
-                word: "Intellectual Property", 
-                sentence: "Establishing the legal identity of a game means clarifying if the market focus relies on an original or licensed [BLANK]." 
+                word: "vocabword3", 
+                sentence: " [BLANK] ." 
             },
             { 
-                word: "GDD", 
-                sentence: "Before engineers can code specific game mechanics or artists build assets, they must consult the master [BLANK]." 
+                word: "vocabword4", 
+                sentence: " [BLANK] ." 
             },
             { 
-                word: "Alpha", 
-                sentence: "Once the game build hits [BLANK] status, it is officially feature-complete and ready for heavy polish and QA debugging." 
-            }
+                word: "vocabword5", 
+                sentence: " [BLANK] ." 
+            },         
+            { 
+                word: "vocabword6", 
+                sentence: " [BLANK] ." 
+            },
+            { 
+                word: "vocabword7", 
+                sentence: " [BLANK] ." 
+            }					
         ]
     };
     // =========================================================================
@@ -501,7 +509,7 @@
         const targetElement = document.getElementById('capture-target');
         const screenButton = document.getElementById('screenshot-btn');
         
-        screenButton.innerText = "⏳ Processing...";
+        screenButton.innerText = "⏳Processing...";
         screenButton.disabled = true;
 
         html2canvas(targetElement, {
