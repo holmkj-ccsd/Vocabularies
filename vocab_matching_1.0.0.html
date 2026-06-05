@@ -235,7 +235,7 @@
         </div>
 
     <div class="code-container" id="code-box">
-        <div class="code-title">ðŸŽ‰ Activity Completed Successfully!</div>
+        <div class="code-title">🎉 Activity Completed Successfully!</div>
         <div class="code-display" id="completion-code-render">VOCAB-TRACK-XXXXXX</div>
         <div class="code-instructions">Your answers have been verified. Click the activated "Screenshot" button below to copy your submission record!</div>
     </div>
@@ -509,7 +509,7 @@
         const targetElement = document.getElementById('capture-target');
         const screenButton = document.getElementById('screenshot-btn');
         
-        screenButton.innerText = "â³ Processing...";
+        screenButton.innerText = "⏳Processing...";
         screenButton.disabled = true;
 
         html2canvas(targetElement, {
@@ -520,7 +520,7 @@
         }).then(canvas => {
             canvas.toBlob(blob => {
                 if (!blob) {
-                    screenButton.innerText = "âŒ Failed";
+                    screenButton.innerText = "❌ Failed";
                     screenButton.disabled = false;
                     return;
                 }
@@ -530,16 +530,16 @@
                 ]).then(() => {
                     screenButton.style.backgroundColor = '#10b981';
                     screenButton.style.color = '#ffffff';
-                    screenButton.innerText = "âœ… Copied!";
+                    screenButton.innerText = "✅ Copied!";
                     setTimeout(() => {
                         screenButton.style.backgroundColor = 'var(--accent-blue)';
                         screenButton.style.color = '#0f172a';
-                        screenButton.innerText = "ðŸ“‹ Screenshot";
+                        screenButton.innerText = "📋 Screenshot";
                         screenButton.disabled = false;
                     }, 3000);
                 }).catch(err => {
                     console.error("Clipboard Error: ", err);
-                    screenButton.innerText = "âŒ Blocked";
+                    screenButton.innerText = "❌ Blocked";
                     screenButton.disabled = false;
                 });
             }, 'image/png');
