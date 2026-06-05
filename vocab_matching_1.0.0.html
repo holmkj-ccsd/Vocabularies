@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vocabulary Matching Activity</title>
+    <title>Dynamic Vocabulary Matching Activity</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -33,7 +33,7 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
+            max-width: 750px;
             width: 100%;
             border: 1px solid var(--border-color);
             box-sizing: border-box;
@@ -108,7 +108,7 @@
             align-items: center;
             justify-content: center;
             vertical-align: middle;
-            min-width: 130px;
+            min-width: 140px;
             height: 32px;
             border-bottom: 2px solid var(--accent-blue);
             margin: 0 5px;
@@ -183,15 +183,15 @@
             background-color: rgba(16, 185, 129, 0.15);
         }
 
-        /* Completion Code Box - Animations removed for cleaner screenshot rendering */
+        /* Completion Code Box */
         .code-container {
             display: none; 
-            background-color: #064e3b; /* Using solid HEX instead of alpha transparency */
+            background-color: #064e3b; 
             border: 2px solid var(--accent-green);
             padding: 20px;
             border-radius: 8px;
             text-align: center;
-            margin-bottom: 25px; /* Added spacing above the control bar */
+            margin-bottom: 25px; 
             box-sizing: border-box;
         }
 
@@ -208,7 +208,7 @@
             font-weight: bold;
             letter-spacing: 2px;
             color: var(--accent-blue);
-            background-color: #0b1329; /* Solid dark background fallback */
+            background-color: #0b1329; 
             padding: 10px;
             border-radius: 4px;
             display: inline-block;
@@ -218,50 +218,25 @@
 
         .code-instructions {
             font-size: 0.85rem;
-            color: #a7f3d0; /* High contrast text color */
+            color: #a7f3d0; 
         }
     </style>
 </head>
 <body>
 
 <div class="activity-container" id="capture-target">
-    <h2>Vocabulary Matching: Welcome to GDD</h2>
-    <p class="instructions">Drag each key term from the word bank into its correct matching sentence placeholder below. Incorrect answers automatically return to the top bank when verified.</p>
+    <h2 id="activity-title">Vocabulary Matching</h2>
+    <p class="instructions" id="activity-instructions">Drag each key term from the word bank into its correct matching sentence placeholder below.</p>
 
     <div class="word-bank" id="word-bank" ondragover="allowDrop(event)" ondrop="dropBackToBank(event)">
-        <div class="word-card" draggable="true" id="word-one" ondragstart="drag(event)">GDD</div>
-        <div class="word-card" draggable="true" id="word-two" ondragstart="drag(event)">prototype</div>
-        <div class="word-card" draggable="true" id="word-three" ondragstart="drag(event)">Initial Game Concept</div>
-        <div class="word-card" draggable="true" id="word-four" ondragstart="drag(event)">brainstorming</div>
-        <div class="word-card" draggable="true" id="word-five" ondragstart="drag(event)">Premise</div>
-    </div>
+        </div>
 
-    <div class="sentence-list">
-        <div class="sentence-item">
-            1. The foundational story framework defining the Who, What, Where, When, and Why of a game is called its 
-            <div class="drop-zone" id="zone-five" ondragover="allowDrop(event)" ondrop="drop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"></div>.
+    <div class="sentence-list" id="sentence-list">
         </div>
-        <div class="sentence-item">
-            2. To test our gameplay idea for a phasing through walls mechanic we built a  
-            <div class="drop-zone" id="zone-two" ondragover="allowDrop(event)" ondrop="drop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"></div> to see if it was "fun".
-        </div>
-        <div class="sentence-item">
-            3. We had an idea today for a game we wanted to run by the Producer so we wrote a quick  
-            <div class="drop-zone" id="zone-three" ondragover="allowDrop(event)" ondrop="drop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"></div> and presented it to him in the elevator.
-        </div>
-        <div class="sentence-item">
-            4. Before engineers can code specific game mechanics or artists build assets, they must consult the master 
-            <div class="drop-zone" id="zone-one" ondragover="allowDrop(event)" ondrop="drop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"></div>.
-        </div>
-        <div class="sentence-item">
-            5. The Producer asked us for a game idea based on a new movie series, so we sat down and did some 
-            <div class="drop-zone" id="zone-four" ondragover="allowDrop(event)" ondrop="drop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"></div>.
-        </div>
-    </div>
 
     <div class="code-container" id="code-box">
-        <div class="code-title">🎉 Activity Completed Successfully!</div>
-        <div class="code-display" id="completion-code-render">DGD-TRACK-XXXXXX</div>
+        <div class="code-title">ðŸŽ‰ Activity Completed Successfully!</div>
+        <div class="code-display" id="completion-code-render">VOCAB-TRACK-XXXXXX</div>
         <div class="code-instructions">Your answers have been verified. Click the activated "Screenshot" button below to copy your submission record!</div>
     </div>
 
@@ -269,14 +244,117 @@
         <div class="status-feedback" id="feedback-msg">Attempts remaining: 5 / 5</div>
         <div class="btn-group">
             <button class="btn" id="check-btn" onclick="checkAnswers()">Check Answers</button>
-            <button class="btn btn-screenshot" id="screenshot-btn" onclick="copyScreenshot()" disabled>📋 Screenshot</button>
+            <button class="btn btn-screenshot" id="screenshot-btn" onclick="copyScreenshot()" disabled>ðŸ“‹ Screenshot</button>
         </div>
     </div>
 </div>
 
 <script>
+    // =========================================================================
+    // TEACHER CONFIGURATION BLOCK
+    // Edit the text below to adapt this puzzle for any vocabulary lesson!
+    // =========================================================================
+    const VOCAB_DATA = {
+        title: "Vocabulary Matching: Production & Concepts",
+        instructions: "Drag each key term from the word bank into its correct matching sentence placeholder below. Incorrect answers automatically return to the top bank when verified.",
+        assignmentPrefix: "DGD-WELC", // Prefix used in the unique verification string
+        maxAttempts: 5,
+        
+        // Add as many words and sentences as you want. 
+        // IMPORTANT: The key (left side) must exactly match the placeholder value inside the sentence text!
+        items: [
+            { 
+                word: "Premise", 
+                sentence: "The foundational story framework defining the Who, What, Where, When, and Why of a game is called its [BLANK]." 
+            },
+            { 
+                word: "prototype", 
+                sentence: "To test our gameplay idea for a phasing through walls mechanic we built a [BLANK] to see if it was 'fun'." 
+            },
+            { 
+                word: "Intellectual Property", 
+                sentence: "We had an idea today for a game we wanted to run by the Producer so we wrote a quick [BLANK] and presented it to him in the elevator."
+		},
+            { 
+                word: "GDD", 
+                sentence: "Before engineers can code specific game mechanics or artists build assets, they must consult the master [BLANK]." 
+		},
+            { 
+                word: "brainstorming", 
+                sentence: "The Producer asked us for a game idea based on a new movie series, so we sat down and did some[BLANK] to come up with some ideas.." 
+            }
+        ]
+    };
+    // =========================================================================
+    // END OF TEACHER CONFIGURATION BLOCK
+    // Do not edit below this line unless customizing engine behavior.
+    // =========================================================================
+
     let attempts = 0;
-    const maxAttempts = 5;
+    const maxAttempts = VOCAB_DATA.maxAttempts;
+
+    // Initialize layout dynamically on window mount
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('activity-title').innerText = VOCAB_DATA.title;
+        document.getElementById('activity-instructions').innerText = VOCAB_DATA.instructions;
+        document.getElementById('feedback-msg').innerText = `Attempts remaining: ${maxAttempts} / ${maxAttempts}`;
+        
+        buildActivityLayout();
+    });
+
+    function buildActivityLayout() {
+        const wordBank = document.getElementById('word-bank');
+        const sentenceList = document.getElementById('sentence-list');
+        
+        // Generate Word Cards and shuffle them randomly
+        let wordsArray = VOCAB_DATA.items.map((item, index) => {
+            return { id: `word-${index}`, value: item.word };
+        });
+        
+        // Knuth-Fisher-Yates Array Shuffle algorithm
+        for (let i = wordsArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [wordsArray[i], wordsArray[j]] = [wordsArray[j], wordsArray[i]];
+        }
+
+        // Inject Shuffled words into Word Bank Container
+        wordsArray.forEach(w => {
+            const card = document.createElement('div');
+            card.className = 'word-card';
+            card.setAttribute('draggable', 'true');
+            card.id = w.id;
+            card.innerText = w.value;
+            card.addEventListener('dragstart', drag);
+            wordBank.appendChild(card);
+        });
+
+        // Inject Sentences dynamically converting "[BLANK]" into active Drop zones
+        VOCAB_DATA.items.forEach((item, index) => {
+            const sItem = document.createElement('div');
+            sItem.className = 'sentence-item';
+            
+            // Build split blocks to wrap around the dynamic drop zone structure
+            const parts = item.sentence.split('[BLANK]');
+            
+            sItem.appendChild(document.createTextNode(`${index + 1}. ${parts[0]}`));
+            
+            const dropZone = document.createElement('div');
+            dropZone.className = 'drop-zone';
+            dropZone.id = `zone-${index}`;
+            dropZone.setAttribute('data-expected-word', item.word);
+            dropZone.addEventListener('dragover', allowDrop);
+            dropZone.addEventListener('drop', drop);
+            dropZone.addEventListener('dragenter', dragEnter);
+            dropZone.addEventListener('dragleave', dragLeave);
+            
+            sItem.appendChild(dropZone);
+            if(parts[1]) {
+                sItem.appendChild(document.createTextNode(parts[1]));
+            }
+            
+            sentenceList.appendChild(sItem);
+        });
+    }
 
     function allowDrop(ev) {
         ev.preventDefault();
@@ -348,11 +426,11 @@
         attempts++;
 
         zones.forEach(zone => {
-            const expectedIdEnding = zone.id.replace('zone-', '');
+            const expectedWord = zone.getAttribute('data-expected-word');
             const currentCard = zone.children[0];
-            const currentCardId = currentCard.id.replace('word-', '');
+            const currentCardWord = currentCard.innerText;
 
-            if (expectedIdEnding === currentCardId) {
+            if (expectedWord === currentCardWord) {
                 zone.classList.add('correct-match');
                 currentCard.setAttribute('draggable', 'false'); 
             } else {
@@ -389,19 +467,23 @@
             randomResult += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         
-        const finalCode = `DGD-WELC-${randomResult}`;
+        const finalCode = `${VOCAB_DATA.assignmentPrefix}-${randomResult}`;
         document.getElementById('completion-code-render').innerText = finalCode;
         document.getElementById('code-box').style.display = 'block';
-        
-        // Turn on screenshot option now that elements are generated
         document.getElementById('screenshot-btn').disabled = false;
     }
 
     function revealCorrectAnswers() {
         const zones = document.querySelectorAll('.drop-zone');
         zones.forEach(zone => {
-            const expectedIdEnding = zone.id.replace('zone-', '');
-            const correctCard = document.getElementById(`word-${expectedIdEnding}`);
+            const expectedWord = zone.getAttribute('data-expected-word');
+            
+            // Find the active card element that contains this specific word text dynamically
+            const cards = document.querySelectorAll('.word-card');
+            let correctCard;
+            cards.forEach(c => {
+                if(c.innerText === expectedWord) correctCard = c;
+            });
             
             zone.innerHTML = ''; 
             zone.classList.add('correct-match');
@@ -419,10 +501,9 @@
         const targetElement = document.getElementById('capture-target');
         const screenButton = document.getElementById('screenshot-btn');
         
-        screenButton.innerText = "⏳ Processing...";
+        screenButton.innerText = "â³ Processing...";
         screenButton.disabled = true;
 
-        // Clean layout execution loop
         html2canvas(targetElement, {
             backgroundColor: '#0f172a', 
             scale: 2, 
@@ -431,7 +512,7 @@
         }).then(canvas => {
             canvas.toBlob(blob => {
                 if (!blob) {
-                    screenButton.innerText = "❌ Failed";
+                    screenButton.innerText = "âŒ Failed";
                     screenButton.disabled = false;
                     return;
                 }
@@ -441,16 +522,16 @@
                 ]).then(() => {
                     screenButton.style.backgroundColor = '#10b981';
                     screenButton.style.color = '#ffffff';
-                    screenButton.innerText = "✅ Copied!";
+                    screenButton.innerText = "âœ… Copied!";
                     setTimeout(() => {
                         screenButton.style.backgroundColor = 'var(--accent-blue)';
                         screenButton.style.color = '#0f172a';
-                        screenButton.innerText = "📋 Screenshot";
+                        screenButton.innerText = "ðŸ“‹ Screenshot";
                         screenButton.disabled = false;
                     }, 3000);
                 }).catch(err => {
                     console.error("Clipboard Error: ", err);
-                    screenButton.innerText = "❌ Blocked";
+                    screenButton.innerText = "âŒ Blocked";
                     screenButton.disabled = false;
                 });
             }, 'image/png');
